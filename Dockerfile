@@ -1,43 +1,27 @@
-# From PHP 7.2 FPM based on Alpine Linux
-FROM php:7.0-fpm-alpine
+FROM php:7.0-fpm
 
-# Maintainer
 MAINTAINER poroto82 <poroto82@gmail.com>
 
-# Install dependencies
-RUN apk --update add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.6/main curl curl-dev 
-RUN apk --update add --no-cache \
-    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
-    --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
-    --repository http://dl-cdn.alpinelinux.org/alpine/v3.6/main \
-      shadow libxml2-dev freetype-dev libpng-dev libjpeg-turbo-dev imagemagick-dev icu-dev openssl-dev gcc g++ autoconf make \
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libmcrypt-dev \
+        libpng-dev \
+        libicu-dev \
+        libpq-dev \
+        libxpm-dev \
+        libvpx-dev \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-install -j$(nproc) mcrypt \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install -j$(nproc) intl \
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) pgsql \
+    && docker-php-ext-install -j$(nproc) pdo_pgsql \
+    && docker-php-ext-install -j$(nproc) exif \
     && docker-php-ext-configure gd \
-        --with-gd \
         --with-freetype-dir=/usr/include/ \
-        --with-png-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-configure soap --enable-soap \
-    && yes '' | pecl install apcu-5.1.8 \
-    && docker-php-ext-install ctype curl soap dom gd hash iconv intl json mbstring mysqli opcache pdo pdo_mysql phar posix session simplexml sockets tokenizer xml xmlrpc xmlwriter zip pgsql\
-    && docker-php-ext-enable apcu \
-    && apk del gcc g++ autoconf make \
-    && rm -rf /var/cache/apk/*
-
-# PHP Config
-COPY conf/*.ini /usr/local/etc/php/conf.d/
-
-# Disable access log for php-fpm
-RUN sed -e '/access.log/s/^/;/' -i /usr/local/etc/php-fpm.d/docker.conf
-RUN echo -e "[PHP]\nlog_errors = yes" > /usr/local/etc/php/conf.d/errorlog.ini
-
-# Hack to change uid of 'www-data' to 1000
-RUN usermod -u 1000 www-data
-
-# Change working directory
-WORKDIR /srv
-
-# PHP config directory is a volume
-VOLUME /usr/local/etc/php/conf.d/
-
-# UTF-8 default
-ENV LANG en_US.utf8
+        --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
+        --with-vpx-dir=/usr/lib/x86_64-linux-gnu/ \
