@@ -1,5 +1,5 @@
 # From PHP 7.2 FPM based on Alpine Linux
-FROM php:7.2-fpm-alpine
+FROM php:7.0-fpm-alpine
 
 # Maintainer
 MAINTAINER poroto82 <poroto82@gmail.com>
