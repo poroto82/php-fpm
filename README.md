@@ -1,2 +1,2 @@
-# PHP 7.2 FPM
+# PHP 7.0 FPM
 
