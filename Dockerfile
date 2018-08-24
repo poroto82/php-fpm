@@ -18,7 +18,7 @@ RUN apk --update add --no-cache \
         --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure soap --enable-soap \
     && yes '' | pecl install apcu-5.1.8 \
-    && docker-php-ext-install ctype curl soap dom gd hash iconv intl json mbstring mysqli opcache pdo pdo_mysql phar posix session simplexml sockets tokenizer xml xmlrpc xmlwriter zip \
+    && docker-php-ext-install ctype curl soap dom gd hash iconv intl json mbstring mysqli opcache pdo pdo_mysql phar posix session simplexml sockets tokenizer xml xmlrpc xmlwriter zip pgsql\
     && docker-php-ext-enable apcu \
     && apk del gcc g++ autoconf make \
     && rm -rf /var/cache/apk/*
